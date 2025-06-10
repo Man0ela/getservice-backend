@@ -51,9 +51,7 @@ const profissionais = [
 ];
 
 
-// --- ROTAS PARA PROFISSIONAIS ---
 
-// READ (Ler todos os profissionais E fazer busca/filtro)
 // GET /profissionais OU /profissionais?tipo_like=Faxineira
 router.get('/', function(req, res, next) {
     const termoBusca = req.query.tipo_like;
@@ -61,18 +59,17 @@ router.get('/', function(req, res, next) {
     // Se existe um termo de busca na URL (ex: ?tipo_like=...)
     if (termoBusca) {
         const resultado = profissionais.filter(
-            // .toLowerCase() para a busca não diferenciar maiúsculas/minúsculas
+            
             prof => prof.tipo.toLowerCase().includes(termoBusca.toLowerCase())
         );
         res.status(200).json(resultado);
     } else {
-        // Se não há termo de busca, retorna a lista completa
+        
         res.status(200).json(profissionais);
     }
 });
 
-// READ (Ler um único profissional pelo ID)
-// GET /profissionais/:id
+
 router.get('/:id', function(req, res, next) {
     const idProcurado = parseInt(req.params.id);
     const profissional = profissionais.find(p => p.id === idProcurado);
