@@ -1,87 +1,70 @@
 var express = require('express');
 var router = express.Router();
+const Servico = require('../models/Servico');
 
-// --- Nosso "Banco de Dados em Memória" Temporário ---
-// Estes são os dados iniciais. As rotas abaixo irão modificar este array.
-// Se o servidor for reiniciado, ele voltará a este estado original.
-let servicos =[];
-let proximoId = servicos.length > 0 ? Math.max(...servicos.map(s => s.id)) + 1 : 1;
-
-
-
-
-router.get('/', function(req, res, next) {
-    
-    res.status(200).json(servicos);
-});
-
-
-router.get('/:id', function(req, res, next) {
-    const idProcurado = parseInt(req.params.id);
-    const servico = servicos.find(s => s.id === idProcurado);
-
-    if (servico) {
-        res.status(200).json(servico);
-    } else {
+// GET /servicos/:id 
+router.get('/:id', async (req, res) => {
+    try {
+        // Agora usa o Mongoose para encontrar pelo ID no banco de dados.
+        const servico = await Servico.findById(req.params.id);
         
-        res.status(404).json({ message: 'Serviço não encontrado.' });
+        if (servico) {
+            res.status(200).json(servico);
+        } else {
+            res.status(404).json({ message: 'Serviço não encontrado.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
 
 
-router.post('/', function(req, res, next) {
-    
-    const novoServico = req.body;
-  
-    
-    novoServico.id = proximoId++;
-  
-    
-    servicos.push(novoServico);
-  
-   
-    res.status(201).json(novoServico);
+// GET /servicos (com filtro)
+router.get('/', async (req, res) => {
+    try {
+        const filtro = req.query.profissionalId ? { profissionalId: req.query.profissionalId } : {};
+        const servicos = await Servico.find(filtro);
+        res.status(200).json(servicos);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 
 
-router.patch('/:id', function(req, res, next) {
-    const idProcurado = parseInt(req.params.id);
-    const dadosUpdate = req.body;
-    
-    const indexDoServico = servicos.findIndex(s => s.id === idProcurado);
 
-    if (indexDoServico !== -1) {
-        
-        const servicoOriginal = servicos[indexDoServico];
-        
-        
-        const servicoAtualizado = { ...servicoOriginal, ...dadosUpdate };
-        
-        
-        servicos[indexDoServico] = servicoAtualizado;
+// POST /servicos
+router.post('/', async (req, res) => {
+    try {
+        const novoServico = new Servico(req.body);
+        await novoServico.save();
+        res.status(201).json(novoServico);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
 
+
+
+// PATCH /servicos/:id
+router.patch('/:id', async (req, res) => {
+    try {
+        const servicoAtualizado = await Servico.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.status(200).json(servicoAtualizado);
-    } else {
-        res.status(404).json({ message: 'Serviço não encontrado para atualização.' });
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 
 
-
-router.delete('/:id', function(req, res, next) {
-    const idProcurado = parseInt(req.params.id);
-    const servicoIndex = servicos.findIndex(s => s.id === idProcurado);
-
-    if (servicoIndex !== -1) {
-        
-        servicos.splice(servicoIndex, 1);
-        
-        
+// DELETE /servicos/:id
+router.delete('/:id', async (req, res) => {
+    try {
+        await Servico.findByIdAndDelete(req.params.id);
         res.status(204).send();
-    } else {
-        res.status(404).json({ message: 'Serviço não encontrado para exclusão.' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 });
 
