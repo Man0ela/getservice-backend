@@ -15,7 +15,10 @@ const clienteSchema = new mongoose.Schema({
         required: true
         // Em um app real, este campo seria criptografado antes de salvar
     },
-    // Você pode adicionar outros campos aqui no futuro, como endereço, telefone, etc.
+    clienteId: {
+        type: String, // Para simplificar, usaremos String por enquanto.
+        required: true
+    }
 },{
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

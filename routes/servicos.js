@@ -19,6 +19,25 @@ router.get('/:id', async (req, res) => {
 });
 
 
+// GET /servicos?clienteId=XXXX
+router.get('/', async (req, res) => {
+    try {
+        // Agora, o clienteId é OBRIGATÓRIO para buscar um histórico
+        const { clienteId } = req.query;
+
+        if (!clienteId) {
+            // Se não for fornecido um clienteId, retorna um erro ou uma lista vazia.
+            return res.status(400).json({ message: 'O ID do cliente é necessário.' });
+        }
+
+        // Busca no banco de dados apenas os serviços que pertencem àquele cliente.
+        const servicos = await Servico.find({ clienteId: clienteId });
+        res.status(200).json(servicos);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 // GET /servicos (com filtro)
 router.get('/', async (req, res) => {
