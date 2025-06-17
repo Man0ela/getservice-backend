@@ -7,6 +7,15 @@ const profissionalSchema = new mongoose.Schema({
     descricao: String,
     preco: Number,
     distancia: Number
+},
+    {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    });
+    
+profissionalSchema.virtual('id').get(function() {
+    return this._id.toHexString();
 });
+
 
 module.exports = mongoose.model('Profissional', profissionalSchema);

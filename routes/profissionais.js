@@ -8,23 +8,20 @@ const Profissional = require('../models/Profissional'); // 1. Importa o modelo P
 
 // READ (Ler todos os profissionais E fazer busca/filtro)
 // GET /profissionais OU /profissionais?tipo_like=Faxineira
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const termoBusca = req.query.tipo_like;
         let filtro = {};
 
-        // Se existe um termo de busca na URL...
         if (termoBusca) {
-            // ...cria um filtro usando RegEx para buscar texto parcial e ignorar maiúsculas/minúsculas.
-            // Isso substitui o `tipo_like` do json-server.
             filtro = { tipo: { $regex: termoBusca, $options: 'i' } };
         }
 
-        // Busca no banco de dados com o filtro (ou sem filtro, se não houver termo de busca)
         const profissionais = await Profissional.find(filtro);
         res.status(200).json(profissionais);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        // Se ocorrer qualquer erro com o banco de dados, esta linha será executada
+        res.status(500).json({ message: "Erro ao buscar profissionais no servidor.", details: error.message });
     }
 });
 
