@@ -15,10 +15,6 @@ const clienteSchema = new mongoose.Schema({
         required: true
         // Em um app real, este campo seria criptografado antes de salvar
     },
-    clienteId: {
-        type: String, // Para simplificar, usaremos String por enquanto.
-        required: true
-    }
 },{
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

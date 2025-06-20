@@ -7,8 +7,8 @@ var indexRouter = require('./routes/index');
 var servicosRouter = require('./routes/servicos');
 var profissionaisRouter = require('./routes/profissionais'); 
 var clientesRouter = require('./routes/cliente');
-const connectDB = require('./config/database'); // <-- Com './'
-
+const connectDB = require('./config/database'); 
+var authRouter = require('./routes/auth');
 
 // Conecta ao banco de dados
 connectDB(); 
@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
+app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/servicos', servicosRouter);
 app.use('/profissionais', profissionaisRouter); 

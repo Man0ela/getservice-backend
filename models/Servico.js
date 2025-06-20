@@ -7,6 +7,10 @@ const servicoSchema = new mongoose.Schema({
     data: Date,
     avaliacao: String,
     avaliacaoGeral: Number,
+    clienteId: {
+        type: String,
+        required: true
+    },
     icon: String
 },  {
     toJSON: { virtuals: true },
