@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
         await novoCliente.save();
         
         // 6. Retorna o cliente recém-criado (sem a senha) com o status 201 (Created)
-        // Por segurança, é uma boa prática não retornar a senha na resposta da API.
+        
         const clienteParaRetorno = novoCliente.toObject();
         delete clienteParaRetorno.senha;
 
@@ -47,6 +47,6 @@ router.post('/', async (req, res) => {
 });
 
 
-// (As outras rotas GET, etc., podem ser adicionadas aqui no futuro)
+
 
 module.exports = router;

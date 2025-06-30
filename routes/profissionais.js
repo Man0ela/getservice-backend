@@ -2,9 +2,7 @@ var express = require('express');
 var router = express.Router();
 const Profissional = require('../models/Profissional'); // 1. Importa o modelo Profissional
 const bcrypt = require('bcryptjs');
-// O array em memória foi REMOVIDO daqui.
 
-// --- ROTAS PARA PROFISSIONAIS ---
 
 // READ (Ler todos os profissionais E fazer busca/filtro)
 // GET /profissionais OU /profissionais?tipo_like=Faxineira

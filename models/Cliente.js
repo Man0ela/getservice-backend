@@ -13,7 +13,7 @@ const clienteSchema = new mongoose.Schema({
     senha: {
         type: String,
         required: true
-        // Em um app real, este campo seria criptografado antes de salvar
+        
     },
 },{
     toJSON: { virtuals: true },

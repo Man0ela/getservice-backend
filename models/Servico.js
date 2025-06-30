@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const servicoSchema = new mongoose.Schema({
     nome: String,
     tipo: String,
-    profissionalId: String, // No futuro, podemos usar um tipo de referência do Mongoose
+    profissionalId: String, 
     data: Date,
     avaliacao: String,
     avaliacaoGeral: Number,
