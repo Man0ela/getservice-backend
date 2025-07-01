@@ -1,58 +1,49 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-require('dotenv').config(); // Para usar a chave secreta
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
-// Importa os models para procurar os usuários
-const Cliente = require('../models/Cliente');
-const Profissional = require('../models/Profissional');
+const Cliente = require("../models/Cliente");
+const Profissional = require("../models/Profissional");
 
-// Rota de Login
-// POST /auth/login
-router.post('/login', async (req, res) => {
-    const { email, senha, tipoUsuario } = req.body;
+router.post("/login", async (req, res) => {
+  const { email, senha } = req.body;
 
-    try {
-        // 1. Encontra o usuário pelo email
-        let user;
-        if (tipoUsuario === 'cliente') {
-            user = await Cliente.findOne({ email });
-        } else if (tipoUsuario === 'profissional') {
-            user = await Profissional.findOne({ email });
-        }
+  try {
+    console.log("🔍 Buscando usuário com email:", email);
 
-        if (!user) {
-            return res.status(404).json({ message: 'Usuário não encontrado.' });
-        }
+    let user = await Cliente.findOne({ email });
+    let tipoUsuario = "cliente";
 
-        // 2. Compara a senha enviada com a senha criptografada no banco
-        const isMatch = await bcrypt.compare(senha, user.senha);
-        if (!isMatch) {
-            return res.status(400).json({ message: 'Credenciais inválidas.' });
-        }
-
-        // 3. Se tudo estiver certo, cria um Token de Acesso (JWT)
-        const payload = {
-            id: user.id,
-            nome: user.nome,
-            tipo: tipoUsuario
-        };
-        const token = jwt.sign(
-            payload, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '1h' } // Token expira em 1 hora
-        );
-
-        // 4. Envia o token e os dados do usuário de volta para o front-end
-        res.status(200).json({
-            token,
-            user: payload
-        });
-
-    } catch (error) {
-        res.status(500).json({ message: 'Erro no servidor.' });
+    if (!user) {
+      user = await Profissional.findOne({ email });
+      tipoUsuario = "profissional";
     }
+
+    if (!user) {
+      console.log("❌ Nenhum usuário encontrado com esse email.");
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    console.log("✅ Usuário encontrado:", user.email, "| Tipo:", tipoUsuario);
+
+    const isMatch = await bcrypt.compare(senha, user.senha);
+    if (!isMatch) {
+      console.log("❌ Senha incorreta.");
+      return res.status(400).json({ message: "Credenciais inválidas." });
+    }
+
+    const payload = { id: user.id, nome: user.nome, tipo: tipoUsuario };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.status(200).json({ token, user: payload });
+  } catch (error) {
+    console.error("💥 Erro no login:", error);
+    res.status(500).json({ message: "Erro no servidor." });
+  }
 });
 
 module.exports = router;
