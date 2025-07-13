@@ -47,13 +47,14 @@ profissionalSchema.methods.comparePassword = async function(candidatePassword) {
 // Remove a senha do objeto retornado como JSON
 profissionalSchema.set('toJSON', {
     transform: (doc, ret) => {
-        delete ret.senha;
-        delete ret.__v;
+        ret.id = ret._id;      // Cria o campo 'id'
+        delete ret._id;        // Apaga o '_id'
+        delete ret.senha;      // Apaga a senha
+        delete ret.__v;        // Apaga a versão
         return ret;
     }
 });
 
-module.exports = mongoose.model('Profissional', profissionalSchema);
 
 
 module.exports = mongoose.model('Profissional', profissionalSchema);
