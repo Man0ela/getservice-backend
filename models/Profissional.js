@@ -7,7 +7,8 @@ const profissionalSchema = new mongoose.Schema({
     tipo: { type: String, required: [true, 'O tipo de serviço é obrigatório'] },
     estrelas: { type: Number, default: 0 },
     descricao: String,
-
+    valorPorHora: { type: Number, default: 0 },
+    distanciaMaxima: { type: Number, default: 0 },
     // <-- CAMPOS DE AUTENTICAÇÃO ADICIONADOS
     email: {
         type: String,

@@ -23,11 +23,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Uso das Rotas ---
-app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/servicos', servicosRouter);
-app.use('/profissionais', profissionaisRouter);
-app.use('/clientes', clientesRouter);
+app.use('/api', indexRouter);
+app.use('/api/auth', authRouter);
+app.use('/api/servicos', servicosRouter);
+app.use('/api/profissionais', profissionaisRouter);
+app.use('/api/clientes', clientesRouter);
 
 // Exporta o app configurado para ser usado pelo ./bin/www
 module.exports = app;

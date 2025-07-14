@@ -39,7 +39,7 @@ router.get("/", async (req, res) => {
 // ================================================================
 router.post("/", async (req, res) => {
   try {
-    const { email, nome, senha, tipo, descricao } = req.body;
+    const { email, nome, senha, tipo, descricao, valorPorHora, distanciaMaxima } = req.body;
 
     const emailEmUso = await Cliente.findOne({ email }) || await Profissional.findOne({ email });
     if (emailEmUso) {
@@ -51,7 +51,9 @@ router.post("/", async (req, res) => {
         email,
         senha,
         tipo,
-        descricao
+        descricao,
+        valorPorHora,    // <-- ADICIONE ESTA LINHA
+        distanciaMaxima  // <-- E ESTA LINHA
     });
 
     const profissionalSalvo = await novoProfissional.save();
