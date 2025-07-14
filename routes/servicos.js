@@ -27,7 +27,37 @@ router.get('/', async (req, res) => {
         res.status(500).json({ message: "Erro interno no servidor." });
     }
 });
+router.patch('/:id', async (req, res) => {
+    try {
+        // CORREÇÃO: Espera 'avaliacaoGeral' em vez de 'nota'
+        const { avaliacao, avaliacaoGeral } = req.body;
 
+        // A validação agora checa por 'avaliacaoGeral'
+        if (avaliacao === undefined || avaliacaoGeral === undefined) {
+            return res.status(400).json({ message: "Dados de avaliação (avaliação e avaliacaoGeral) são obrigatórios." });
+        }
+        
+        const servicoAtualizado = await Servico.findByIdAndUpdate(
+            req.params.id,
+            { 
+                avaliacao: avaliacao,
+                // O campo no banco de dados também é 'avaliacaoGeral'
+                avaliacaoGeral: avaliacaoGeral 
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!servicoAtualizado) {
+            return res.status(404).json({ message: 'Serviço não encontrado para avaliar.' });
+        }
+
+        res.status(200).json(servicoAtualizado);
+
+    } catch (error) {
+        console.error("Erro ao enviar avaliação:", error);
+        res.status(500).json({ message: "Erro interno no servidor." });
+    }
+});
 // ================================================================
 // ## ROTA CORRIGIDA: Criar um novo serviço (Agendamento) ##
 // POST /servicos
@@ -61,7 +91,22 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        const servicoCancelado = await Servico.findByIdAndDelete(req.params.id);
 
+        if (!servicoCancelado) {
+            return res.status(404).json({ message: 'Serviço não encontrado para cancelamento.' });
+        }
+
+        // Retorna uma mensagem de sucesso
+        res.status(200).json({ message: 'Serviço cancelado com sucesso.' });
+
+    } catch (error) {
+        console.error("Erro ao cancelar serviço:", error);
+        res.status(500).json({ message: "Erro interno no servidor." });
+    }
+});
 // ================================================================
 // Rota para buscar um serviço por ID (a que você já tinha)
 // GET /servicos/:id 

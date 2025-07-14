@@ -3,26 +3,31 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+require('dotenv').config(); // Carrega as variáveis de ambiente
+
+// --- Rotas ---
 var indexRouter = require('./routes/index');
 var servicosRouter = require('./routes/servicos');
-var profissionaisRouter = require('./routes/profissionais'); 
+var profissionaisRouter = require('./routes/profissionais');
 var clientesRouter = require('./routes/cliente');
-const connectDB = require('./config/database'); 
 var authRouter = require('./routes/auth');
 
-// Conecta ao banco de dados
-connectDB(); 
-
 var app = express();
+
+// --- Middlewares ---
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/auth', authRouter);
+
+// --- Uso das Rotas ---
 app.use('/', indexRouter);
+app.use('/auth', authRouter);
 app.use('/servicos', servicosRouter);
-app.use('/profissionais', profissionaisRouter); 
+app.use('/profissionais', profissionaisRouter);
 app.use('/clientes', clientesRouter);
+
+// Exporta o app configurado para ser usado pelo ./bin/www
 module.exports = app;

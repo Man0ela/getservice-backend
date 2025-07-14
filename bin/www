@@ -1,68 +1,82 @@
 #!/usr/bin/env node
 
 /**
- * Module dependencies.
+ * Módulos.
  */
-
+require('dotenv').config();
 var app = require('../app');
 var debug = require('debug')('pragmapm:server');
 var http = require('http');
+var mongoose = require('mongoose'); // Importa o mongoose
+
+// Importa os models e dados para o seeding
+const Profissional = require('../models/Profissional');
+const profissionaisIniciais = require('../data/profissionais');
 
 /**
- * Get port from environment and store in Express.
+ * Pega a porta do ambiente e guarda no Express.
  */
-
 var port = normalizePort(process.env.PORT || '3001');
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Cria o servidor HTTP.
  */
-
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Conecta ao MongoDB e então inicia o servidor.
  */
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('Erro: A variável de ambiente MONGO_URI não está definida.');
+  process.exit(1);
+}
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log('Conectado ao MongoDB com sucesso!');
+
+    // LÓGICA DE AUTO-SEEDING
+    const popularBancoDeDados = async () => {
+      try {
+        const count = await Profissional.countDocuments();
+        if (count === 0) {
+          await Profissional.insertMany(profissionaisIniciais);
+          console.log('Banco de dados de profissionais populado com dados iniciais!');
+        }
+      } catch (error) {
+        console.error('Erro ao popular o banco de dados:', error);
+      }
+    };
+    // Chama a função e continua após ela terminar
+    return popularBancoDeDados();
+  })
+  .then(() => {
+    // Inicia o servidor APÓS conectar e popular o banco
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  })
+  .catch(err => {
+    console.error('Erro fatal ao conectar ou configurar o banco de dados:', err);
+    process.exit(1);
+  });
+
 
 /**
- * Normalize a port into a number, string, or false.
+ * Funções geradas pelo Express (não precisam de alteração).
  */
-
 function normalizePort(val) {
   var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
+  if (isNaN(port)) { return val; }
+  if (port >= 0) { return port; }
   return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
-
-  // handle specific listen errors with friendly messages
+  if (error.syscall !== 'listen') { throw error; }
+  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges');
@@ -77,14 +91,10 @@ function onError(error) {
   }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  // Adicionei um console.log para ver a porta mais facilmente
+  console.log(`Servidor rodando e ouvindo em: ${bind}`);
 }
