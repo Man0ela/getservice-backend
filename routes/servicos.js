@@ -58,6 +58,28 @@ router.patch('/:id', async (req, res) => {
         res.status(500).json({ message: "Erro interno no servidor." });
     }
 });
+// NOVA ROTA: Buscar serviços por ID do profissional
+// GET /api/servicos/profissional/:profissionalId
+router.get('/profissional/:profissionalId', async (req, res) => {
+  try {
+    const { profissionalId } = req.params;
+
+    // Busca todos os serviços associados ao profissional
+    const todosOsServicos = await Servico.find({ profissionalId }).populate('clienteId', 'nome');
+
+    // Separa os serviços em histórico (concluídos) e solicitações (pendentes)
+    // (Esta lógica pode variar dependendo do seu model de 'Servico')
+    const historico = todosOsServicos.filter(s => s.status === 'concluido');
+    const solicitacoes = todosOsServicos.filter(s => s.status === 'pendente' || s.status === 'aceito');
+
+    res.json({ historico, solicitacoes });
+
+  } catch (error) {
+    console.error("Erro ao buscar serviços do profissional:", error);
+    res.status(500).json({ message: "Erro interno no servidor." });
+  }
+});
+
 // ================================================================
 // ## ROTA CORRIGIDA: Criar um novo serviço (Agendamento) ##
 // POST /servicos
