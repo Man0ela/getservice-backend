@@ -14,19 +14,17 @@ router.post('/', async (req, res) => {
             return res.status(409).json({ message: 'Este email já está cadastrado.' });
         }
         
-        // <-- MUDANÇA: Código simplificado!
-        // Apenas criamos o novo cliente com a senha em texto plano.
-        // O modelo (hook pre('save')) vai cuidar da criptografia automaticamente.
+    
         const novoCliente = new Cliente({
             nome,
             email,
-            senha // Enviamos a senha normal. A mágica acontece no .save()
+            senha 
         });
         
-        // Salva o novo cliente no MongoDB (aqui a senha será criptografada)
+        
         const clienteSalvo = await novoCliente.save();
         
-        // Retorna o cliente recém-criado (o toJSON do modelo já remove a senha)
+        
         res.status(201).json(clienteSalvo);
 
     } catch (error) {

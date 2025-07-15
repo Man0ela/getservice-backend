@@ -9,7 +9,7 @@ const profissionalSchema = new mongoose.Schema({
     descricao: String,
     valorPorHora: { type: Number, default: 0 },
     distanciaMaxima: { type: Number, default: 0 },
-    // <-- CAMPOS DE AUTENTICAÇÃO ADICIONADOS
+    
     email: {
         type: String,
         required: [true, 'O email é obrigatório'],
@@ -27,12 +27,12 @@ const profissionalSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-// Adiciona um campo virtual 'id'
+
 profissionalSchema.virtual('id').get(function() {
     return this._id.toHexString();
 });
 
-// Hook para criptografar a senha antes de salvar
+
 profissionalSchema.pre('save', async function(next) {
     if (!this.isModified('senha')) return next();
     const salt = await bcrypt.genSalt(10);
@@ -45,13 +45,13 @@ profissionalSchema.methods.comparePassword = async function(candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.senha);
 };
 
-// Remove a senha do objeto retornado como JSON
+
 profissionalSchema.set('toJSON', {
     transform: (doc, ret) => {
-        ret.id = ret._id;      // Cria o campo 'id'
-        delete ret._id;        // Apaga o '_id'
-        delete ret.senha;      // Apaga a senha
-        delete ret.__v;        // Apaga a versão
+        ret.id = ret._id;      
+        delete ret._id;        
+        delete ret.senha;      
+        delete ret.__v;        
         return ret;
     }
 });

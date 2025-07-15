@@ -2,17 +2,13 @@ var express = require('express');
 var router = express.Router();
 const Servico = require('../models/Servico');
 
-// ================================================================
-// ## ROTA CORRIGIDA: Listar todos os serviços de um cliente específico ##
-// GET /servicos?clienteId=...
-// ================================================================
+
 router.get('/', async (req, res) => {
     try {
         // Pega o ID do cliente da query string da URL
         const { clienteId } = req.query;
 
         // Se o ID do cliente não for fornecido, retorna um erro 400 (Bad Request)
-        // Isso corrige o seu erro!
         if (!clienteId) {
             return res.status(400).json({ message: 'O ID do cliente é obrigatório.' });
         }
@@ -29,10 +25,8 @@ router.get('/', async (req, res) => {
 });
 router.patch('/:id', async (req, res) => {
     try {
-        // CORREÇÃO: Espera 'avaliacaoGeral' em vez de 'nota'
         const { avaliacao, avaliacaoGeral } = req.body;
 
-        // A validação agora checa por 'avaliacaoGeral'
         if (avaliacao === undefined || avaliacaoGeral === undefined) {
             return res.status(400).json({ message: "Dados de avaliação (avaliação e avaliacaoGeral) são obrigatórios." });
         }
@@ -41,7 +35,7 @@ router.patch('/:id', async (req, res) => {
             req.params.id,
             { 
                 avaliacao: avaliacao,
-                // O campo no banco de dados também é 'avaliacaoGeral'
+                
                 avaliacaoGeral: avaliacaoGeral 
             },
             { new: true, runValidators: true }
@@ -67,8 +61,7 @@ router.get('/profissional/:profissionalId', async (req, res) => {
     // Busca todos os serviços associados ao profissional
     const todosOsServicos = await Servico.find({ profissionalId }).populate('clienteId', 'nome');
 
-    // Separa os serviços em histórico (concluídos) e solicitações (pendentes)
-    // (Esta lógica pode variar dependendo do seu model de 'Servico')
+    
     const historico = todosOsServicos.filter(s => s.status === 'concluido');
     const solicitacoes = todosOsServicos.filter(s => s.status === 'pendente' || s.status === 'aceito');
 
@@ -80,14 +73,11 @@ router.get('/profissional/:profissionalId', async (req, res) => {
   }
 });
 
-// ================================================================
-// ## ROTA CORRIGIDA: Criar um novo serviço (Agendamento) ##
+
 // POST /servicos
-// ================================================================
 router.post('/', async (req, res) => {
     try {
         // Pega os dados do corpo da requisição.
-        // O front-end PRECISA enviar todos estes dados.
         const { nome, tipo, profissionalId, data, clienteId } = req.body;
 
         // Validação para garantir que os campos essenciais não estão faltando
@@ -101,7 +91,7 @@ router.post('/', async (req, res) => {
             profissionalId,
             data,
             clienteId,
-            icon: 'calendar-check' // Icone padrão para agendamento
+            icon: 'calendar-check' 
         });
 
         const servicoSalvo = await novoServico.save();
@@ -129,10 +119,10 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: "Erro interno no servidor." });
     }
 });
-// ================================================================
+
 // Rota para buscar um serviço por ID (a que você já tinha)
 // GET /servicos/:id 
-// ================================================================
+
 router.get('/:id', async (req, res) => {
     try {
         const servico = await Servico.findById(req.params.id);

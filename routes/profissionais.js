@@ -3,10 +3,9 @@ var router = express.Router();
 const Profissional = require("../models/Profissional");
 const Cliente = require("../models/Cliente");
 
-// ================================================================
 // ## NOVA ROTA: Listar e Buscar Profissionais ##
-// GET /profissionais  OU  GET /profissionais?tipo_like=Jardineiro
-// ================================================================
+// 
+
 router.get("/", async (req, res) => {
   try {
     const termoBusca = req.query.tipo_like;
@@ -14,16 +13,14 @@ router.get("/", async (req, res) => {
 
     // Se um termo de busca foi enviado na URL...
     if (termoBusca) {
-      // Cria uma expressão regular para buscar de forma case-insensitive (não diferencia maiúsculas/minúsculas)
-      // É o equivalente do "_like" do json-server
       const regex = new RegExp(termoBusca, 'i');
       query.tipo = regex; // Adiciona o filtro por 'tipo' na query
     }
 
-    // Executa a busca no banco de dados com o filtro (ou sem filtro, se a query estiver vazia)
+    
     const profissionais = await Profissional.find(query);
     
-    // Se não encontrar nenhum profissional, retorna um array vazio (o que é correto)
+    
     res.status(200).json(profissionais);
 
   } catch (error) {
@@ -33,10 +30,8 @@ router.get("/", async (req, res) => {
 });
 
 
-// ================================================================
-// ## Rota de Cadastro de Profissional (já existente e corrigida) ##
-// POST /profissionais
-// ================================================================
+
+// POST /profissionai
 router.post("/", async (req, res) => {
   try {
     const { email, nome, senha, tipo, descricao, valorPorHora, distanciaMaxima } = req.body;
@@ -52,8 +47,8 @@ router.post("/", async (req, res) => {
         senha,
         tipo,
         descricao,
-        valorPorHora,    // <-- ADICIONE ESTA LINHA
-        distanciaMaxima  // <-- E ESTA LINHA
+        valorPorHora,    
+        distanciaMaxima  
     });
 
     const profissionalSalvo = await novoProfissional.save();

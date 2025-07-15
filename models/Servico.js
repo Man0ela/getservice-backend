@@ -5,18 +5,18 @@ const servicoSchema = new mongoose.Schema({
     tipo: String,
     profissionalId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Profissional', // O nome do model que você exportou em Profissional.js
+        ref: 'Profissional', 
         required: true
     },
     clienteId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Cliente', // O nome do model que você exportou em Cliente.js
+        ref: 'Cliente', 
         required: true
     }, 
     data: Date,
     avaliacao: String,
     avaliacaoGeral: Number,
-     status: { // Adicionei um campo 'status' que sua lógica do dashboard usa
+     status: { 
         type: String,
         enum: ['pendente', 'aceito', 'concluido', 'cancelado'],
         default: 'pendente'

@@ -14,12 +14,12 @@ console.log('URI:', uri.replace(/:([^:@\s]+)@/, ':*****@')); // Mostra a URI sem
 mongoose.connect(uri)
   .then(() => {
     console.log('\n***************************************************');
-    console.log('✅ Conexão com MongoDB Atlas bem-sucedida!');
+    console.log('Conexão com MongoDB Atlas bem-sucedida!');
     console.log('***************************************************');
     mongoose.connection.close();
   })
   .catch(err => {
     console.error('\n***************************************************');
-    console.error('❌ FALHA NA CONEXÃO:', err.message);
+    console.error('FALHA NA CONEXÃO:', err.message);
     console.error('***************************************************');
   });
